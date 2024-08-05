@@ -1,0 +1,56 @@
+import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { login } from '../../store/auth';
+import axios from 'axios';
+
+const Login: React.FC = () => {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const dispatch = useDispatch();
+  console.log(process.env);
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    try {
+      const response = await axios.post(`http://localhost:3000/auth/login`, { username, password });
+      dispatch(login(response.data.token));
+    } catch (error) {
+      console.error('Error logging in:', error);
+    }
+  };
+
+  return (
+    <div style={styles.content}>
+      <form onSubmit={handleSubmit}>
+      <span style={styles.title}>LOGIN</span>
+      <div>
+        <input style={styles.input} type="text" placeholder='USERNAME' value={username} onChange={(e) => setUsername(e.target.value)} required />
+      </div>
+      <div>
+        <input style={styles.input} type="password" placeholder='PASSWORD' value={password} onChange={(e) => setPassword(e.target.value)} required />
+      </div>
+      <button type="submit">Login</button>
+    </form>
+    </div>
+  );
+};
+
+const styles = {
+  content: {
+    width: "25%",
+    gap: "1%",
+    display: "flex",
+    padding: "2%",
+    fontSize: "xx-large",
+    border: "1px solid black",
+    justifyContent: "center",
+    borderRadius: "2%"
+  },
+  title: {
+    fontSize: "xxx-large"
+  },
+  input: {
+    fontSize: "x-large"
+  }
+} as const;
+
+export default Login;
