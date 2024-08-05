@@ -107,7 +107,7 @@ const Tasks = () => {
             </td>
             <td style={styles.cell}>
               {currentlyEditing
-              ? <Save onClick={() => saveTask()} fontSize={"large"} />
+              ? <Save style={styles.icon} onClick={() => saveTask()} fontSize={"large"} />
               : <Edit
                   onClick={() => {
                     if(editingTask.title && task.id !== editingTask.id) {setIsAlert(true);}
