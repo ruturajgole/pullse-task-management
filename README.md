@@ -24,3 +24,4 @@
 4) The code is not type-safe. Models could be created to ensure type safety.
 5) Services are inline with the views, they should be separated from the view for intelligiblity and efficiency. 
 6) Paths used for imports could be simplified by mentioning the basePath in tsconfig.json.
+7) Error handling is not implemented for unsuccessful API response. 
