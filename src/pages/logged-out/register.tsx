@@ -1,7 +1,5 @@
-import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { login } from '../../store/auth';
-import axios from 'axios';
+import React, { useState } from "react";
+import axios from "axios";
 
 const Register = () => {
   const [username, setUsername] = useState("");
@@ -16,7 +14,7 @@ const Register = () => {
     }
 
     try {
-      const response = await axios.post(`http://localhost:3000/auth/register`, { username, password });
+      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}/auth/register`, { username, password });
       if(response.status === 200){
         alert(response.data.message);
         setUsername(prev => "");

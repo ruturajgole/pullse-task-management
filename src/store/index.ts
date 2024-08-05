@@ -1,6 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
-import authReducer from './auth';
-import tasksReducer from "./tasks";
+import authReducer, { login, logout } from './auth';
+import tasksReducer, { addOrUpdate, remove, Task, view } from "./tasks";
 
 const store = configureStore({
   reducer: {
@@ -9,6 +9,15 @@ const store = configureStore({
   },
 });
 
+export {
+  login,
+  logout,
+  addOrUpdate,
+  remove,
+  view
+};
+
+export type { Task };
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 export default store;

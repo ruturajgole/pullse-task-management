@@ -1,10 +1,15 @@
-import { batch, useDispatch, useSelector } from "react-redux";
-import { RootState } from '../../store';
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
-import { view, remove, Task, addOrUpdate } from "../../store/tasks";
-import { useEffect, useState } from "react";
-import {CheckBox, CheckBoxOutlineBlank, DeleteForever, Edit, Save} from '@mui/icons-material';
-import React from "react";
+import {
+  CheckBox,
+  CheckBoxOutlineBlank,
+  DeleteForever,
+  Edit,
+  Save
+} from '@mui/icons-material';
+
+import { RootState, view, remove, Task, addOrUpdate } from 'store';
 import Alert from "./alertModal";
 
 const Tasks = () => {
@@ -20,7 +25,7 @@ const Tasks = () => {
       headers: { Authorization: `Bearer ${token}`}
     };
 
-    const response = await axios.post(`http://localhost:3000/tasks/view`, {}, config);
+    const response = await axios.post(`${process.env.REACT_APP_BASE_URL}/tasks/view`, {}, config);
     dispatch(view(response.data.tasks));
   }
 
@@ -38,7 +43,7 @@ const Tasks = () => {
         headers: { Authorization: `Bearer: ${token}`}
       }
 
-      const response = await axios.post(`http://localhost:3000/tasks/addOrUpdate`, {task: editingTask}, config);
+      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}/tasks/addOrUpdate`, {task: editingTask}, config);
       dispatch(addOrUpdate({
         ...editingTask, 
         id: editingTask.id || response.data.task.insertedId
@@ -52,7 +57,7 @@ const Tasks = () => {
       headers: { Authorization: `Bearer: ${token}`}
     };
 
-    const response = await axios.post(`http://localhost:3000/tasks/delete`, {id}, config);
+    const response = await axios.post(`${process.env.REACT_APP_BASE_URL}/tasks/delete`, {id}, config);
     dispatch(remove(response.data.id));
   }
 

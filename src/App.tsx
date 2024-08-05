@@ -1,10 +1,9 @@
-import {useEffect} from 'react';
-import LoggedOut from './pages/logged-out';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from './store';
-import Home from './pages/home';
-import { login } from './store/auth';
-import axios from 'axios';
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import axios from "axios";
+
+import { Home, LoggedOut } from "pages";
+import { login, RootState } from "store";
 
 function App() {
   const {isAuthenticated} = useSelector((state: RootState) => state.auth);
@@ -19,7 +18,7 @@ function App() {
       }
 
       try {
-        await axios.post(`http://localhost:3000/auth/login`, {}, config);
+        await axios.post(`${process.env.REACT_APP_BASE_URL}/auth/login`, {}, config);
         dispatch(login(token));
       } catch (error) {
         
@@ -32,7 +31,7 @@ function App() {
   }, [])
 
   return (
-      <div className="App">
+      <div>
         {isAuthenticated ? <Home /> : <LoggedOut />}
       </div>
   );

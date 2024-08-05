@@ -1,7 +1,7 @@
-import { logout } from "../../store/auth";
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import LogoutIcon from '@mui/icons-material/Logout';
-import { useDispatch } from 'react-redux';
+import { AccountCircle, Logout } from "@mui/icons-material";
+import { useDispatch } from "react-redux";
+
+import { logout } from "store";
 
 const Header = () => {
   const dispatch = useDispatch();
@@ -14,8 +14,8 @@ const Header = () => {
       <span>ASSESSMENT</span>
     </div>
     <div>
-      <AccountCircleIcon fontSize={"large"}/>
-      <LogoutIcon onClick={signOut} style={styles.logout} fontSize={"large"} color={"error"}/>
+      <AccountCircle fontSize={"large"}/>
+      <Logout onClick={signOut} style={styles.logout} fontSize={"large"} color={"error"}/>
     </div>
   </div>;
 }
@@ -39,4 +39,5 @@ const styles = {
     cursor: "pointer"
   }
 } as const;
+
 export default Header;

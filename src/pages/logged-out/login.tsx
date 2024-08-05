@@ -1,17 +1,18 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { login } from '../../store/auth';
 import axios from 'axios';
+
+import { login } from "store";
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const dispatch = useDispatch();
-  console.log(process.env);
+
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     try {
-      const response = await axios.post(`http://localhost:3000/auth/login`, { username, password });
+      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}/auth/login`, { username, password });
       dispatch(login(response.data.token));
     } catch (error) {
       console.error('Error logging in:', error);
