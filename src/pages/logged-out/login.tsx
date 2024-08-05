@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import axios from 'axios';
+import { Error } from "@mui/icons-material";
 
 import { login } from "store";
+import { getError } from "services/utilities";
 
 const Login: React.FC = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const dispatch = useDispatch();
 
   const handleSubmit = async (event: React.FormEvent) => {
@@ -15,7 +18,8 @@ const Login: React.FC = () => {
       const response = await axios.post(`${process.env.REACT_APP_BASE_URL}/auth/login`, { username, password });
       dispatch(login(response.data.token));
     } catch (error) {
-      console.error('Error logging in:', error);
+      const message = getError(error);
+      message && setError
     }
   };
 
@@ -29,6 +33,7 @@ const Login: React.FC = () => {
       <div>
         <input style={styles.input} type="password" placeholder='PASSWORD' value={password} onChange={(e) => setPassword(e.target.value)} required />
       </div>
+      {error && <div style={styles.error}><Error color={"error"}/><span>{error}</span></div>}
       <button type="submit">Login</button>
     </form>
     </div>
@@ -51,6 +56,12 @@ const styles = {
   },
   input: {
     fontSize: "x-large"
+  },
+  error: {
+    fontSize: "medium",
+    color: "red",
+    display: "flex",
+    alignItems: "center"
   }
 } as const;
 

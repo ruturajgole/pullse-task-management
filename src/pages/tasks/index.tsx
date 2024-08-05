@@ -6,11 +6,13 @@ import {
   CheckBoxOutlineBlank,
   DeleteForever,
   Edit,
+  Error,
   Save
 } from '@mui/icons-material';
 
 import { RootState, view, remove, Task, addOrUpdate } from 'store';
 import Alert from "./alertModal";
+import { getError } from "services/utilities";
 
 const Tasks = () => {
   const { token } = useSelector((state: RootState) => state.auth);
@@ -18,22 +20,19 @@ const Tasks = () => {
   const dispatch = useDispatch();
 
   const [editingTask, setEditingTask] = useState<Task>({title: ""});
+  const [error, setError] = useState("");
   const [isAlert, setIsAlert] = useState(false);
 
   const getTasks = async () => {
     const config = {
       headers: { Authorization: `Bearer ${token}`}
     };
-
-    const response = await axios.post(`${process.env.REACT_APP_BASE_URL}/tasks/view`, {}, config);
-    dispatch(view(response.data.tasks));
-  }
-
-  const editTask = (task: Task) => {
-    if(editingTask?.id !== task.id){
-      
-    } else {
-      setEditingTask(task);
+    try {
+      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}/tasks/view`, {}, config);
+      dispatch(view(response.data.tasks));
+    } catch (error) {
+      const message = getError(error);
+      message && setError(message);
     }
   }
 
@@ -43,12 +42,17 @@ const Tasks = () => {
         headers: { Authorization: `Bearer: ${token}`}
       }
 
-      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}/tasks/addOrUpdate`, {task: editingTask}, config);
-      dispatch(addOrUpdate({
-        ...editingTask, 
-        id: editingTask.id || response.data.task.insertedId
-      }));
-      setEditingTask({title: ""});
+      try{
+        const response = await axios.post(`${process.env.REACT_APP_BASE_URL}/tasks/addOrUpdate`, {task: editingTask}, config);
+        dispatch(addOrUpdate({
+          ...editingTask, 
+          id: editingTask.id || response.data.task.insertedId
+        }));
+        setEditingTask({title: ""});
+      } catch (error) {
+        const message = getError(error);
+        message && setError(message);
+      }
     }
   }
 
@@ -57,13 +61,19 @@ const Tasks = () => {
       headers: { Authorization: `Bearer: ${token}`}
     };
 
-    const response = await axios.post(`${process.env.REACT_APP_BASE_URL}/tasks/delete`, {id}, config);
-    dispatch(remove(response.data.id));
+    try {
+      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}/tasks/delete`, {id}, config);
+      dispatch(remove(response.data.id));
+    } catch (error) {
+      const message = getError(error);
+      message && setError(message);
+    }
   }
 
   useEffect(() => {getTasks()}, [])
 
   return <div style={styles.container}>
+    {error && <div style={styles.error}><Error color={"error"}/><span>{error}</span></div>}
     <div style={styles.title}><span>Tasks</span></div>
     <table style={styles.table}>
       <tbody>
@@ -72,7 +82,7 @@ const Tasks = () => {
           <input
             style={styles.input}
             value={editingTask.id ? "" : editingTask.title}
-            onInput={(e) => editingTask.id ? setIsAlert(true) : editTask({...editingTask, title: e.currentTarget.value})}
+            onInput={(e) => editingTask.id ? setIsAlert(true) : setEditingTask({...editingTask, title: e.currentTarget.value})}
             placeholder={"Type New Task"}
             type="text" />
         </td>
@@ -80,8 +90,8 @@ const Tasks = () => {
         <>
         <td style={styles.cell}>
           {editingTask.isCompleted
-            ? <CheckBox onClick={() => editTask({...editingTask, isCompleted: false})} style={styles.icon} fontSize={"large"}/>
-            : <CheckBoxOutlineBlank onClick={() => editTask({...editingTask, isCompleted: true})} style={styles.icon} fontSize={"large"}/>
+            ? <CheckBox onClick={() => setEditingTask({...editingTask, isCompleted: false})} style={styles.icon} fontSize={"large"}/>
+            : <CheckBoxOutlineBlank onClick={() => setEditingTask({...editingTask, isCompleted: true})} style={styles.icon} fontSize={"large"}/>
           }
         </td>
         <td style={styles.cell}>
@@ -96,13 +106,13 @@ const Tasks = () => {
         return <React.Fragment key={task.id}>
           <tr style={styles.row}>
             <td style={styles.cell}>{currentlyEditing
-              ? <input style={styles.input} autoFocus onInput={(e) => editTask({...editingTask, title: e.currentTarget.value})} type="text" value={editingTask.title} />
+              ? <input style={styles.input} autoFocus onInput={(e) => setEditingTask({...editingTask, title: e.currentTarget.value})} type="text" value={editingTask.title} />
               : task.title}</td>
             <td style={styles.cell}>
               {
                 (currentlyEditing ? editingTask : task).isCompleted
-                ? <CheckBox onClick={() => currentlyEditing && editTask({...editingTask, isCompleted: false})} style={styles.icon} fontSize={"large"}/>
-                : <CheckBoxOutlineBlank onClick={() => currentlyEditing && editTask({...editingTask, isCompleted: true})} style={styles.icon} fontSize={"large"} />
+                ? <CheckBox onClick={() => currentlyEditing && setEditingTask({...editingTask, isCompleted: false})} style={styles.icon} fontSize={"large"}/>
+                : <CheckBoxOutlineBlank onClick={() => currentlyEditing && setEditingTask({...editingTask, isCompleted: true})} style={styles.icon} fontSize={"large"} />
               }
             </td>
             <td style={styles.cell}>
@@ -168,8 +178,11 @@ const styles = {
     width: "35%",
     justifyContent: "center"
   },
-  cellTitle: {
-
+  error: {
+    fontSize: "medium",
+    color: "red",
+    display: "flex",
+    alignItems: "center"
   }
 } as const;
 
